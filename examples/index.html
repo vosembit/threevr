@@ -19,9 +19,9 @@
     <script type="module">
         import * as THREE from '../build/three.module.js';
 
-        //        import {
-        //            OrbitControls
-        //        } from './jsm/controls/OrbitControls.js';
+        import {
+            OrbitControls
+        } from './jsm/controls/OrbitControls.js';
         import {
             GLTFLoader
         } from './jsm/loaders/GLTFLoader.js';
@@ -129,18 +129,18 @@
             //            plane.rotation.x = -Math.PI / 2;
             //            scene.add(plane);
 
-            //            controls = new OrbitControls(camera, renderer.domElement);
-            //            controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
-            //            controls.dampingFactor = 0.05;
-            //            controls.screenSpacePanning = false;
-            //            controls.autoRotate = false;
-            //            controls.autoRotateSpeed = 0.2;
-            //            controls.rotateSpeed = 0.2;
-            //            controls.zoomSpeed = 0.2;
-            //            controls.minDistance = 3;
-            //            controls.maxDistance = 8;
-            //            controls.target.set(0, 1.5, -0.2);
-            //            controls.update();
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+            controls.dampingFactor = 0.05;
+            controls.screenSpacePanning = false;
+            controls.autoRotate = false;
+            controls.autoRotateSpeed = 0.2;
+            controls.rotateSpeed = 0.2;
+            controls.zoomSpeed = 0.2;
+            controls.minDistance = 3;
+            controls.maxDistance = 8;
+            controls.target.set(0, 1.5, -0.2);
+            controls.update();
 
 
             function resizeRendererToDisplaySize(renderer) {
@@ -168,29 +168,18 @@
 
                 time *= 0.001; // convert to seconds
 
-                //                light1.position.x = Math.sin(time * 0.7) * 1;
-                //                light1.position.y = Math.cos(time * 0.5) * 2 + 1;
-                //                light1.position.z = Math.cos(time * 0.3) * 3;
-                //
-                //                light2.position.x = Math.cos(time * 0.3) * 1;
-                //                light2.position.y = Math.sin(time * 0.5) * 2 + 1;
-                //                light2.position.z = Math.sin(time * 0.7) * 3;
-                //
-                //                light3.position.x = Math.sin(time * 0.7) * 1;
-                //                light3.position.y = Math.cos(time * 0.3) * 2 + 1;
-                //                light3.position.z = Math.sin(time * 0.5) * 3;
-                //
-                //                light4.position.x = Math.sin(time * 0.3) * 1;
-                //                light4.position.y = Math.cos(time * 0.7) * 2 + 1;
-                //                light4.position.z = Math.sin(time * 0.5) * 3;
 
-                //                controls.update();
-                //                camera.updateProjectionMatrix();
 
-                cx = Math.sin(time * 0.7);
-                console.log(cx);
-                camera.position.set(cx, 1.6, -5.9);
-               camera.updateProjectionMatrix();
+                if (renderer.xr.isPresenting === false) {
+
+                    controls.update();
+                    //
+                    //                    cx = Math.sin(time * 0.7);
+                    //                    camera.position.set(cx, 1.6, -5.9);
+                    camera.updateProjectionMatrix();
+
+                }
+
 
                 renderer.render(scene, camera);
                 //                requestAnimationFrame(render);

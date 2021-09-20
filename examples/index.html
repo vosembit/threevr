@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>three.js webgl - glTF loader</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="main.css">
+</head>
+
+<body>
+    <div id="info">
+        <a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - GLTFLoader<br />
+        Battle Damaged Sci-fi Helmet by
+        <a href="https://sketchfab.com/theblueturtle_" target="_blank" rel="noopener">theblueturtle_</a><br />
+        <a href="https://hdrihaven.com/hdri/?h=royal_esplanade" target="_blank" rel="noopener">Royal Esplanade</a> by <a href="https://hdrihaven.com/" target="_blank" rel="noopener">HDRI Haven</a>
+    </div>
+
+    <script type="module">
+        import * as THREE from '../build/three.module.js';
+
+        import {
+            OrbitControls
+        } from './jsm/controls/OrbitControls.js';
+        import {
+            GLTFLoader
+        } from './jsm/loaders/GLTFLoader.js';
+        import {
+            RGBELoader
+        } from './jsm/loaders/RGBELoader.js';
+
+        import {
+            VRButton
+        } from './jsm/webxr/VRButton.js';
+
+
+        function main() {
+
+            let camera, scene, renderer, controls, model;
+            let light1, light2, light3, light4;
+
+            const container = document.createElement('div');
+            document.body.appendChild(container);
+
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.25, 50);
+            camera.position.set(-0.1, 1.6, -5.9);
+
+            scene = new THREE.Scene();
+
+            const color = 0x000000;
+            const density = 0.05;
+            scene.fog = new THREE.FogExp2(color, density);
+
+            renderer = new THREE.WebGLRenderer({
+                antialias: true
+            });
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1;
+            renderer.outputEncoding = THREE.sRGBEncoding;
+
+            container.appendChild(renderer.domElement);
+
+            renderer.xr.enabled = true;
+            document.body.appendChild(VRButton.createButton(renderer));
+
+            //    moving lights
+            const intensity = 0.5;
+            const sphere = new THREE.SphereGeometry(0.0001, 16, 8);
+            light1 = new THREE.PointLight(0xff0040, intensity, 50);
+            light1.add(new THREE.Mesh(sphere, new THREE.MeshBasicMaterial({
+                color: 0xff0040
+            })));
+            scene.add(light1);
+
+            light2 = new THREE.PointLight(0x0040ff, intensity, 50);
+            light2.add(new THREE.Mesh(sphere, new THREE.MeshBasicMaterial({
+                color: 0x0040ff
+            })));
+            scene.add(light2);
+
+            light3 = new THREE.PointLight(0x80ff80, intensity, 50);
+            light3.add(new THREE.Mesh(sphere, new THREE.MeshBasicMaterial({
+                color: 0x80ff80
+            })));
+            scene.add(light3);
+
+            light4 = new THREE.PointLight(0xffaa00, intensity, 50);
+            light4.add(new THREE.Mesh(sphere, new THREE.MeshBasicMaterial({
+                color: 0xffaa00
+            })));
+            scene.add(light4);
+
+            new RGBELoader()
+                .setPath('textures/')
+                .load('comfy_cafe_2k.hdr', function(texture) {
+
+                    texture.mapping = THREE.EquirectangularReflectionMapping;
+
+                    scene.background = new THREE.Color(0x000000);
+                    scene.environment = texture;
+                    model = new GLTFLoader().setPath('models/');
+                    model.load('VR_test2.gltf', function(gltf) {
+                        gltf.scene.traverse(function(child) {
+                            if (child.isMesh) {
+                                child.castShadow = true;
+                                child.receiveShadow = true;
+                            }
+                        });
+                        scene.add(gltf.scene);
+                        render();
+                    });
+
+                });
+
+            //Create a plane that receives shadows (but does not cast them)
+            const planeGeometry = new THREE.PlaneGeometry(20, 20, 32, 32);
+            const planeMaterial = new THREE.MeshStandardMaterial({
+                roughness: 0.8,
+                color: 0xffffff,
+                metalness: 0.2,
+                bumpScale: 0.0005
+            });
+            const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+            plane.receiveShadow = true;
+            plane.rotation.x = -Math.PI / 2;
+            //            scene.add(plane);
+
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+            controls.dampingFactor = 0.05;
+            controls.screenSpacePanning = false;
+            controls.autoRotate = false;
+            controls.autoRotateSpeed = 0.2;
+            controls.rotateSpeed = 0.2;
+            controls.zoomSpeed = 0.2;
+            controls.minDistance = 3;
+            controls.maxDistance = 8;
+            controls.target.set(0, 1.5, -0.2);
+            controls.update();
+
+
+            function resizeRendererToDisplaySize(renderer) {
+                const canvas = renderer.domElement;
+                const width = canvas.clientWidth;
+                const height = canvas.clientHeight;
+                const needResize = canvas.width !== width || canvas.height !== height;
+                if (needResize) {
+                    renderer.setSize(width, height, false);
+                }
+                return needResize;
+            }
+
+            //===========================================================
+            //====================== Animation ==========================
+            //===========================================================
+
+            function render(time) {
+
+                if (resizeRendererToDisplaySize(renderer)) {
+                    const canvas = renderer.domElement;
+                    camera.aspect = canvas.clientWidth / canvas.clientHeight;
+                    camera.updateProjectionMatrix();
+                }
+
+                time *= 0.001; // convert to seconds
+
+                light1.position.x = Math.sin(time * 0.7) * 1;
+                light1.position.y = Math.cos(time * 0.5) * 2 + 1;
+                light1.position.z = Math.cos(time * 0.3) * 3;
+
+                light2.position.x = Math.cos(time * 0.3) * 1;
+                light2.position.y = Math.sin(time * 0.5) * 2 + 1;
+                light2.position.z = Math.sin(time * 0.7) * 3;
+
+                light3.position.x = Math.sin(time * 0.7) * 1;
+                light3.position.y = Math.cos(time * 0.3) * 2 + 1;
+                light3.position.z = Math.sin(time * 0.5) * 3;
+
+                light4.position.x = Math.sin(time * 0.3) * 1;
+                light4.position.y = Math.cos(time * 0.7) * 2 + 1;
+                light4.position.z = Math.sin(time * 0.5) * 3;
+
+                controls.update();
+                camera.updateProjectionMatrix();
+
+                renderer.render(scene, camera);
+                //                requestAnimationFrame(render);
+            }
+
+            //            requestAnimationFrame(render);
+            renderer.setAnimationLoop(render);
+        }
+
+        main();
+
+    </script>
+
+</body>
+
+</html>

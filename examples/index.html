@@ -60,11 +60,11 @@
             renderer.toneMappingExposure = 1;
             renderer.outputEncoding = THREE.sRGBEncoding;
 
-            renderer.xr.enabled = true;
-            document.body.appendChild(VRButton.createButton(renderer));
+
 
             container.appendChild(renderer.domElement);
-
+            renderer.xr.enabled = true;
+            document.body.appendChild(VRButton.createButton(renderer));
 
 
             //    moving lights
@@ -185,7 +185,7 @@
 //                light4.position.z = Math.sin(time * 0.5) * 3;
 
 //                controls.update();
-                camera.updateProjectionMatrix();
+//                 camera.updateProjectionMatrix();
 
                 renderer.render(scene, camera);
                 //                requestAnimationFrame(render);

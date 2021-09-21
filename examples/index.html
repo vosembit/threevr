@@ -103,7 +103,7 @@
                     scene.background = new THREE.Color(0x000000);
                     scene.environment = texture;
                     model = new GLTFLoader().setPath('models/');
-                    model.load('VR_test3.gltf', function(gltf) {
+                    model.load('VR_test5.gltf', function(gltf) {
                         gltf.scene.traverse(function(child) {
                             if (child.isMesh) {
                                 child.castShadow = true;
